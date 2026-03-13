@@ -1,13 +1,23 @@
 from pathlib import Path
 import os
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import dj_database_url  # type: ignore[import]
+else:  # pragma: no cover - optional runtime import
+    try:
+        import dj_database_url  # type: ignore[import]
+    except ImportError:
+        dj_database_url = None  # type: ignore[assignment]
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-change-me"
-
-DEBUG = True
-
-ALLOWED_HOSTS: list[str] = []
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "dev-secret-key")
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+RENDER_EXTERNAL_HOSTNAME = os.environ.get("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -55,6 +65,11 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+# На проде (Render) используем DATABASE_URL, локально можно жить на SQLite
+db_url = os.environ.get("DATABASE_URL")
+if db_url and dj_database_url is not None:  # type: ignore[truthy-function]
+    DATABASES["default"] = dj_database_url.parse(db_url, conn_max_age=600, ssl_require=True)
 
 AUTH_PASSWORD_VALIDATORS = []
 
