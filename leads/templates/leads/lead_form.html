@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Новый лид — Мини CRM{% endblock %}
+
+{% block content %}
+  <header class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'leads:lead_list' %}" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+      ←
+    </a>
+    <div>
+      <h1 class="h4 fw-bold mb-1">Новый лид</h1>
+      <p class="text-muted mb-0">Заполните информацию о лиде</p>
+    </div>
+  </header>
+
+  <section class="crm-card p-4">
+    <form method="post" class="row g-3">
+      {% csrf_token %}
+
+      <div class="col-12">
+        <label class="form-label" for="{{ form.lead_id.id_for_label }}">ID лида</label>
+        {{ form.lead_id }}
+        {% if form.lead_id.errors %}<div class="text-danger small">{{ form.lead_id.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label" for="{{ form.source.id_for_label }}">Источник</label>
+        {{ form.source }}
+        {% if form.source.errors %}<div class="text-danger small">{{ form.source.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label" for="{{ form.manager.id_for_label }}">Менеджер</label>
+        {{ form.manager }}
+        {% if form.manager.errors %}<div class="text-danger small">{{ form.manager.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label" for="{{ form.amount.id_for_label }}">Сумма сделки (₽)</label>
+        {{ form.amount }}
+        {% if form.amount.errors %}<div class="text-danger small">{{ form.amount.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label" for="{{ form.current_status.id_for_label }}">Статус</label>
+        {{ form.current_status }}
+        {% if form.current_status.errors %}<div class="text-danger small">{{ form.current_status.errors.0 }}</div>{% endif %}
+      </div>
+
+      <div class="col-12 d-flex justify-content-end gap-2 pt-3 border-top mt-2">
+        <a href="{% url 'leads:lead_list' %}" class="btn btn-outline-secondary">Отмена</a>
+        <button type="submit" class="btn btn-primary">Создать лид</button>
+      </div>
+    </form>
+  </section>
+{% endblock %}
+

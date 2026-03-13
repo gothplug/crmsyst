@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Канбан — Мини CRM{% endblock %}
+
+{% block content %}
+  <h1 class="h4 fw-bold mb-3">Канбан-доска</h1>
+  <p class="text-muted mb-4">Лиды по стадиям воронки продаж.</p>
+
+  <div class="row g-3">
+    {% for col in columns %}
+      <div class="col-12 col-md-6 col-lg-3">
+        <div class="crm-card p-3 h-100 d-flex flex-column">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h6 fw-bold mb-0">{{ col.status.name }}</h2>
+            <span class="badge bg-light text-dark border">{{ col.leads|length }}</span>
+          </div>
+          <div class="small text-muted mb-2">Порядок: {{ col.status.stage_order }}</div>
+          <div class="d-flex flex-column gap-2">
+            {% if not col.leads %}
+              <div class="text-muted small">Нет лидов</div>
+            {% else %}
+              {% for lead in col.leads %}
+                <a href="{% url 'leads:lead_detail' lead.lead_id %}" class="text-decoration-none">
+                  <div class="border rounded-3 p-2 bg-white bg-opacity-75">
+                    <div class="d-flex justify-content-between">
+                      <span class="fw-semibold small">{{ lead.lead_id }}</span>
+                      <span class="small">{{ lead.amount|floatformat:0 }} ₽</span>
+                    </div>
+                    <div class="small text-muted">{{ lead.source }} • {{ lead.manager.name }}</div>
+                  </div>
+                </a>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}
+
+

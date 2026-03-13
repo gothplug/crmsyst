@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Лид {{ lead.lead_id }} — Мини CRM{% endblock %}
+
+{% block content %}
+  <header class="d-flex align-items-center gap-3 mb-4">
+    <a href="{% url 'leads:lead_list' %}" class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+      ←
+    </a>
+    <div class="flex-grow-1">
+      <h1 class="h4 fw-bold mb-1">Лид {{ lead.lead_id }}</h1>
+      <p class="text-muted mb-0">Подробная информация</p>
+    </div>
+    <span class="badge bg-light text-dark border">{{ lead.current_status.name }}</span>
+  </header>
+
+  <section class="crm-card p-4 mb-3">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <p class="text-muted small mb-1">Источник</p>
+        <p class="fw-semibold mb-0">{{ lead.source }}</p>
+      </div>
+      <div class="col-md-6">
+        <p class="text-muted small mb-1">Менеджер</p>
+        <p class="fw-semibold mb-0">{{ lead.manager.name }}</p>
+      </div>
+      <div class="col-md-6">
+        <p class="text-muted small mb-1">Сумма сделки</p>
+        <p class="fw-semibold mb-0">{{ lead.amount|floatformat:0 }} ₽</p>
+      </div>
+      <div class="col-md-6">
+        <p class="text-muted small mb-1">Дата создания</p>
+        <p class="fw-semibold mb-0">{{ lead.created_at|date:"d E Y, H:i" }}</p>
+      </div>
+      <div class="col-12">
+        <hr>
+        <p class="text-muted small mb-1">Последнее обновление</p>
+        <p class="mb-0">{{ lead.updated_at|date:"d E Y, H:i" }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="crm-card p-4 mb-3">
+    <h2 class="h6 fw-bold mb-3">Изменить статус</h2>
+    <form method="post" class="row g-3 align-items-end">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="col-12">
+          <div class="alert alert-danger py-2">
+            {% for e in form.non_field_errors %}
+              <div>{{ e }}</div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      <div class="col-md-4">
+        <label class="form-label" for="{{ form.status.id_for_label }}">Новый статус</label>
+        {{ form.status }}
+        {% if form.status.errors %}<div class="text-danger small">{{ form.status.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="{{ form.changed_by.id_for_label }}">Кем изменён</label>
+        {{ form.changed_by }}
+        {% if form.changed_by.errors %}<div class="text-danger small">{{ form.changed_by.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="{{ form.comment.id_for_label }}">Комментарий</label>
+        {{ form.comment }}
+      </div>
+      <div class="col-12 text-end">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="crm-card p-4">
+    <h2 class="h6 fw-bold mb-3">История статусов</h2>
+    {% if not history %}
+      <p class="text-muted mb-0">История пуста.</p>
+    {% else %}
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Статус</th>
+            <th>Кем изменён</th>
+            <th>Комментарий</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for h in history %}
+            <tr>
+              <td class="text-muted small">{{ h.changed_at|date:"d E Y, H:i" }}</td>
+              <td>{{ h.status.name }}</td>
+              <td>{% if h.changed_by %}{{ h.changed_by.name }}{% else %}—{% endif %}</td>
+              <td>{{ h.comment }}</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}
+

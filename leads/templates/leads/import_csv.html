@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Импорт CSV — Мини CRM{% endblock %}
+
+{% block content %}
+  <h1 class="h4 fw-bold mb-3">Импорт лидов из CSV</h1>
+
+  <section class="crm-card p-4 mb-3">
+    <form method="post" enctype="multipart/form-data" class="row g-3">
+      {% csrf_token %}
+      <div class="col-12 col-md-6">
+        {{ form.file.label_tag }}
+        {{ form.file }}
+      </div>
+      <div class="col-12 d-flex justify-content-start align-items-end">
+        <button type="submit" class="btn btn-primary">Загрузить</button>
+      </div>
+    </form>
+    <p class="text-muted small mt-3 mb-0">
+      Ожидаются колонки: <code>lead_id, created_at, source, manager_id, current_status_id, amount, updated_at</code>.
+      Даты в формате ISO 8601.
+    </p>
+  </section>
+
+  {% if created or updated or errors %}
+    <section class="crm-card p-4">
+      {% if created or updated %}
+        <p class="mb-2">Создано: <strong>{{ created }}</strong>, обновлено: <strong>{{ updated }}</strong>.</p>
+      {% endif %}
+      {% if errors %}
+        <div class="alert alert-danger mb-0">
+          <ul class="mb-0">
+            {% for e in errors %}
+              <li>{{ e }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </section>
+  {% endif %}
+{% endblock %}
+
